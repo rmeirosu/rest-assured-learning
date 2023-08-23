@@ -61,4 +61,48 @@ public class Headers {
                 .log().all()
                 .assertThat().statusCode(200);
     }
+
+    @Test
+    public void multiple_value_headers_inRequest() {
+
+        Header header1 = new Header("multiValueHeader", "value1");
+        Header header2 = new Header("multiValueHeader", "value2");
+        io.restassured.http.Headers headers = new io.restassured.http.Headers(header1, header2);
+
+        given()
+                .baseUri("https://01c13511-eb44-448c-8179-a0155fdb7dc7.mock.pstmn.io/")
+                .headers(headers)
+                .log().all()
+
+        .when()
+                .get("/get")
+
+        .then()
+                .log().all()
+                .assertThat().statusCode(200);
+    }
+
+    @Test
+    public void assert_response_headers() {
+
+        HashMap<String, String> headers = new HashMap<String, String>();
+        headers.put("header", "value2");
+        headers.put("x-mock-match-request-headers", "header2");
+
+        given()
+                .baseUri("https://01c13511-eb44-448c-8179-a0155fdb7dc7.mock.pstmn.io/")
+                .headers(headers)
+
+        .when()
+                .get("/get")
+
+        .then()
+                .log().all()
+                .assertThat()
+                .statusCode(200)
+                .headers("responseHeader", "resValue2",
+                "X-RateLimit-Limit", "120");
+//                    .header("responseHeader", "resValue2")
+//                    .header("X-RateLimit-Limit", "120");
+    }
 }
