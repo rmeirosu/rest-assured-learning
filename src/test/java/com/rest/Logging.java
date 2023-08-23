@@ -3,6 +3,9 @@ package com.rest;
 import io.restassured.config.LogConfig;
 import org.testng.annotations.Test;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static io.restassured.RestAssured.config;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasItems;
@@ -43,7 +46,7 @@ public class Logging {
                 .baseUri("https://api.postman.com")
                 .header("X-Api-Key", "PMAK-64e34cf637d0cc00298b3759-b056c75f549f5ecc0aa579429315249de9")
                 .config(config.logConfig(LogConfig.logConfig().enableLoggingOfRequestAndResponseIfValidationFails()))
-                // enable config logging to avoid duplicating log().ifValidationFails()
+                // use config method for logging to avoid duplicating log().ifValidationFails()
                 // .log().ifValidationFails()
         .when()
                 .get("/workspaces")
@@ -52,5 +55,21 @@ public class Logging {
                  .assertThat().statusCode(200);
                 // .assertThat().statusCode(201);
                 // uncomment above to obtain error
+    }
+
+    @Test
+    public void request_response_blacklistHeader() {
+        Set<String> headers = new HashSet<String>();
+        headers.add("X-Api-Key");
+        headers.add("Accept");
+        given()
+                .baseUri("https://api.postman.com")
+                .header("X-Api-Key", "PMAK-64e34cf637d0cc00298b3759-b056c75f549f5ecc0aa579429315249de9")
+                .config(config.logConfig(LogConfig.logConfig().blacklistHeaders(headers)))
+                .log().all()
+        .when()
+                .get("/workspaces")
+        .then()
+                .assertThat().statusCode(200);
     }
 }
