@@ -10,6 +10,38 @@ import static io.restassured.RestAssured.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+/**
+ * Collection matchers (List, Array, Map, etc)
+ * ===========================================
+ * hasItem() -> verify if element is present in the collection
+ * not(hasItem()) -> check if element is NOT present in the collection
+ * hasItems() -> verify if ANY elements are present in the collection, in ANY order
+ * contains() -> verify if ALL elements are present in the collection in SPECIFIED order
+ * containsInAnyOrder() -> verify if ALL elements are present in ANY order
+ * empty() -> verify if collection is empty
+ * not(emptyArray()) -> verify if collection is not empty
+ * hasSize() -> verify the size of the collection
+ * everyItem(startsWith()) -> verify if every item in the collection starts with specified string
+ *
+ * hasKey() -> Map -> verify if Map has the specified key (value is not verified)
+ * hasValue() -> Map -> verify if Map has at least one key matching specified value
+ * hasEntry() -> Map -> verify if Map has the specified kev/value pair
+ * equalTo(Collections.EMPTY_MAP) -> verify if Map is empty
+ * allOf() -> verify all matchers
+ * anyOf() -> verify any matchers
+ *
+ * Numbers
+ * =======
+ * greaterThanOrEqualTo()
+ * lessThan()
+ * lessThanOrEqualTo()
+ *
+ * Strings
+ * =======
+ * containsString()
+ * emptyString()
+ */
+
 public class HamcrestMatchers {
 
     @Test
@@ -67,8 +99,39 @@ public class HamcrestMatchers {
                 .assertThat().statusCode(200)
                 // .body("workspaces.name", empty());
                 // verify if returned collection is empty
-                .body("workspace.name", is(not(empty())));
+                .body("workspaces.name", is(not(empty())));
                 // verify if returned collection is NOT empty
+    }
+
+    @Test
+    public void validate_get_response_body_hamcrest_hasSize() {
+        given()
+                .baseUri("https://api.postman.com")
+                .header("X-Api-Key", "PMAK-64e34cf637d0cc00298b3759-b056c75f549f5ecc0aa579429315249de9")
+                .when()
+                .get("/workspaces")
+                .then()
+                .log().all()
+                .assertThat().statusCode(200)
+                // .body("workspaces.name", empty());
+                // verify if returned collection is empty
+                .body("workspaces.name", hasSize(3));
+        // verify if returned collection size is 3
+    }
+
+    @Test
+    public void validate_get_response_body_hamcrest_hasEntry() {
+        given()
+                .baseUri("https://api.postman.com")
+                .header("X-Api-Key", "PMAK-64e34cf637d0cc00298b3759-b056c75f549f5ecc0aa579429315249de9")
+                .when()
+                .get("/workspaces")
+                .then()
+                .log().all()
+                .assertThat().statusCode(200)
+                // .body("workspaces.name", empty());
+                // verify if returned collection is empty
+                .body("workspaces[0]", hasEntry("name", "My Workspace"));
     }
 
 }
