@@ -2,6 +2,8 @@ package com.rest;
 
 import io.restassured.filter.log.LogDetail;
 import io.restassured.response.Response;
+import io.restassured.specification.QueryableRequestSpecification;
+import io.restassured.specification.SpecificationQuerier;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -33,8 +35,14 @@ public class RequestSpecBuilder {
         requestSpecBuilder.log(LogDetail.ALL);
 
         requestSpecification = requestSpecBuilder.build();
+    }
 
-
+    // used to query the request specification to find information:
+    @Test
+    public void queryTest() {
+        QueryableRequestSpecification queryableRequestSpecification = SpecificationQuerier.query(requestSpecification);
+        System.out.println(queryableRequestSpecification.getBaseUri());
+        System.out.println(queryableRequestSpecification.getHeaders());
     }
 
     @org.testng.annotations.Test
