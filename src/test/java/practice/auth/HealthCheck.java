@@ -27,4 +27,32 @@ public class HealthCheck {
                     .statusCode(201)
                     .body(containsString("Created"));
     }
+
+    @Test
+    public void negative_post(){
+        given()
+                .baseUri("https://restful-booker.herokuapp.com")
+                .log().all()
+        .when()
+                .post("/ping")
+        .then()
+                .log().all()
+                .assertThat()
+                    .statusCode(415)
+                    .body(containsString("Unsupported Media Type"));
+    }
+
+    @Test
+    public void negative_path(){
+        given()
+                .baseUri("https://restful-booker.herokuapp.com")
+                .log().all()
+        .when()
+                .get("/pi_ng")
+        .then()
+                .log().all()
+                .assertThat()
+                    .statusCode(404)
+                    .body(containsString("Not Found"));
+    }
 }
