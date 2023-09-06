@@ -18,6 +18,33 @@ Create positive and negative tests for CreateBooking endpoint.
             },
             "additionalneeds" : "Breakfast"
         }'
+
+-Negative tests to be covered:
+
+    Headers
+        without Content-Type header
+        without Accept header
+        without Content-Type and Accept headers
+        with invalid Content-Type header
+        with invalid Accept header
+        with invalid Content-Type and Accept headers
+
+    Request body
+        without firstname key
+        without lastname key
+        without totalprice key
+        without depositpaid key
+        without checkin key
+        without checkout key
+        without additionalneeds key
+        without all keys
+        with invalid firstname key
+        with invalid lastname key
+        with invalid totalprice key
+        with invalid depositpaid key
+        with invalid checkin key
+        with invalid checkout key
+        with invalid additionalneeds key
  */
 
 import io.restassured.builder.RequestSpecBuilder;
@@ -52,6 +79,14 @@ public class CreateBooking {
     File payloadNoCheckIn = new File("src/test/resources/CreateBooking/payloadNoCheckIn.json");
     File payloadNoCheckOut = new File("src/test/resources/CreateBooking/payloadNoCheckOut.json");
     File payloadNoAdditionalNeeds = new File("src/test/resources/CreateBooking/payloadNoAdditionalNeeds.json");
+    File payloadEmpty = new File("src/test/resources/CreateBooking/payloadEmpty.json");
+    File payloadInvalidFirstName = new File("src/test/resources/CreateBooking/payloadInvalidFirstName.json");
+    File payloadInvalidLastName = new File("src/test/resources/CreateBooking/payloadInvalidLastName.json");
+    File payloadInvalidTotalprice = new File("src/test/resources/CreateBooking/payloadInvalidTotalprice.json");
+    File payloadInvalidDepositPaid = new File("src/test/resources/CreateBooking/payloadInvalidDepositPaid.json");
+    File payloadInvalidCheckIn = new File("src/test/resources/CreateBooking/payloadInvalidCheckIn.json");
+    File payloadInvalidCheckOut = new File("src/test/resources/CreateBooking/payloadInvalidCheckOut.json");
+    File payloadInvalidAdditionalNeeds = new File("src/test/resources/CreateBooking/payloadInvalidAdditionalNeeds.json");
 
     @BeforeClass
     public void BeforeClass() {
@@ -179,10 +214,112 @@ public class CreateBooking {
     }
 
     // no additional needs - optional
+    // the field is treated as optional, 200 OK without it
     @Test
     public void negative_no_additional_needs() {
         given(reqSpec)
                 .body(payloadNoAdditionalNeeds)
+        .when()
+                .post(baseUri)
+        .then()
+                .spec(resSpec)
+                .assertThat().statusCode(200);
+    }
+
+    // no keys
+    @Test
+    public void negative_no_keys() {
+        given(reqSpec)
+                .body(payloadEmpty)
+        .when()
+                .post(baseUri)
+        .then()
+                .spec(resSpecNegative)
+                .assertThat().statusCode(500);
+    }
+
+
+    // invalid firstname key
+    @Test
+    public void negative_invalid_firstname() {
+        given(reqSpec)
+                .body(payloadInvalidFirstName)
+        .when()
+                .post(baseUri)
+        .then()
+                .spec(resSpecNegative)
+                .assertThat().statusCode(500);
+    }
+
+    // invalid lastname key
+    @Test
+    public void negative_invalid_lastname() {
+        given(reqSpec)
+                .body(payloadInvalidLastName)
+        .when()
+                .post(baseUri)
+        .then()
+                .spec(resSpecNegative)
+                .assertThat().statusCode(500);
+    }
+
+    // invalid totalprice key
+    @Test
+    public void negative_invalid_totalprice() {
+        given(reqSpec)
+                .body(payloadInvalidTotalprice)
+        .when()
+                .post(baseUri)
+        .then()
+                .spec(resSpec)
+                .assertThat().statusCode(200)
+                .body("totalprice", Matchers.nullValue());
+    }
+
+    // invalid depositpaid key
+    // there is an issue here, the documentation states the field is boolean
+    // when using string or int, the request is accepted though
+    @Test
+    public void negative_invalid_depositpaid() {
+        given(reqSpec)
+                .body(payloadInvalidDepositPaid)
+        .when()
+                .post(baseUri)
+        .then()
+                .spec(resSpecNegative)
+                .assertThat().statusCode(500);
+    }
+
+    // invalid checkin key
+    @Test
+    public void negative_invalid_checkin() {
+        given(reqSpec)
+                .body(payloadInvalidCheckIn)
+        .when()
+                .post(baseUri)
+        .then()
+                .spec(resSpecNegative)
+                .assertThat().statusCode(500);
+    }
+
+    // invalid checkout key
+    @Test
+    public void negative_invalid_checkout() {
+        given(reqSpec)
+                .body(payloadInvalidCheckOut)
+        .when()
+                .post(baseUri)
+        .then()
+                .spec(resSpecNegative)
+                .assertThat().statusCode(500);
+    }
+
+    // invalid additionalneeds key
+    // the field is treated as optional, 200 OK without it
+    @Test
+    public void negative_invalid_additionalneeds() {
+        given(reqSpec)
+                .body(payloadInvalidAdditionalNeeds)
         .when()
                 .post(baseUri)
         .then()
