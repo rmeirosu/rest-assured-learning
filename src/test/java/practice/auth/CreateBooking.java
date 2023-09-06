@@ -65,6 +65,8 @@ import static org.hamcrest.Matchers.equalTo;
 public class CreateBooking {
 
     RequestSpecification reqSpec;
+    RequestSpecification reqSpecInvalidContentType;
+    RequestSpecification reqSpecInvalidAccept;
     ResponseSpecification resSpec;
     ResponseSpecification resSpecNegative;
 
@@ -96,6 +98,19 @@ public class CreateBooking {
                 .log(LogDetail.ALL);
         reqSpec = requestSpecBuilder.build();
 
+        RequestSpecBuilder requestSpecBuilderInvalidCT = new RequestSpecBuilder()
+                .setBaseUri(baseUri)
+                .setContentType(ContentType.BINARY)
+                .log(LogDetail.ALL);
+        reqSpecInvalidContentType = requestSpecBuilderInvalidCT.build();
+
+        RequestSpecBuilder requestSpecBuilderInvalidAccept = new RequestSpecBuilder()
+                .setBaseUri(baseUri)
+                .setContentType(ContentType.JSON)
+                .setAccept(ContentType.BINARY)
+                .log(LogDetail.ALL);
+        reqSpecInvalidAccept = requestSpecBuilderInvalidAccept.build();
+
         ResponseSpecBuilder responseSpecBuilder = new ResponseSpecBuilder()
                 .expectStatusCode(200)
                 .expectContentType(ContentType.JSON)
@@ -103,7 +118,6 @@ public class CreateBooking {
         resSpec = responseSpecBuilder.build();
 
         ResponseSpecBuilder responseSpecBuilderNegative = new ResponseSpecBuilder()
-                .expectStatusCode(500)
                 .expectContentType(ContentType.TEXT)
                 .log(LogDetail.ALL);
         resSpecNegative = responseSpecBuilderNegative.build();
@@ -325,6 +339,31 @@ public class CreateBooking {
         .then()
                 .spec(resSpec)
                 .assertThat().statusCode(200);
+    }
+
+    // invalid header content type
+    @Test
+    public void negative_invalid_contentype() {
+        given(reqSpecInvalidContentType)
+                .body(payload)
+        .when()
+                .post(baseUri)
+        .then()
+                .spec(resSpecNegative)
+                .assertThat().statusCode(500);
+    }
+
+    // invalid header accept
+    @Test
+    public void negative_invalid_accept() {
+        given(reqSpecInvalidAccept)
+                .body(payload)
+        .when()
+                .post(baseUri)
+        .then()
+                .spec(resSpecNegative)
+                .assertThat().statusCode(418)
+                .body(Matchers.equalTo("I'm a Teapot"));
     }
 
 }
