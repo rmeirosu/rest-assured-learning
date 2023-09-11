@@ -1,4 +1,4 @@
-package practice.auth;
+package practice;
 
 /*
 Create positive and negative tests for CreateBooking endpoint.

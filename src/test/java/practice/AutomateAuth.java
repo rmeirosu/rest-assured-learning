@@ -26,7 +26,7 @@ Create a new auth token to use for access to the PUT and DELETE for a booking.
         with invalid username and password
 */
 
-package practice.auth;
+package practice;
 
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;

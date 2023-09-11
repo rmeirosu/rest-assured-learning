@@ -5,7 +5,7 @@ A simple health check endpoint to confirm whether the API is up and running.
     CURL:
     curl -i https://restful-booker.herokuapp.com/ping
  */
-package practice.auth;
+package practice;
 
 import org.testng.annotations.Test;
 
